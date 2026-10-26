@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/autoarchive/db" VERSION="20261026" COMMENT="XMLDB file for Moodle local/autoarchive"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="local_autoarchive_courses" COMMENT="Stores information about archived courses">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Original Moodle course ID"/>
+        <FIELD NAME="coursename" TYPE="char" LENGTH="254" NOTNULL="true" SEQUENCE="false" COMMENT="Short course name"/>
+        <FIELD NAME="coursefullname" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Full course name"/>
+        <FIELD NAME="categoryid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Course category ID"/>
+        <FIELD NAME="categoryname" TYPE="char" LENGTH="254" NOTNULL="true" SEQUENCE="false" COMMENT="Category name at time of archiving"/>
+        <FIELD NAME="backupfilename" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Name of the backup file"/>
+        <FIELD NAME="backupfilesize" TYPE="int" LENGTH="20" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Size of backup file in bytes"/>
+        <FIELD NAME="backupfilehash" TYPE="char" LENGTH="40" NOTNULL="true" SEQUENCE="false" COMMENT="SHA1 hash of backup file for integrity check"/>
+        <FIELD NAME="lastaccess" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Timestamp of last access to course"/>
+        <FIELD NAME="archived_date" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Timestamp when course was archived"/>
+        <FIELD NAME="originalvisible" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="Course visibility before archiving"/>
+        <FIELD NAME="course_hidden" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="1 if the course was hidden after archiving"/>
+        <FIELD NAME="course_deleted" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="1 if the Moodle course was deleted and only the backup remains"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Timestamp when record was created"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Timestamp when record was last modified"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id"/>
+        <KEY NAME="categoryid" TYPE="foreign" FIELDS="categoryid" REFTABLE="course_categories" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="archived_date" UNIQUE="false" FIELDS="archived_date" COMMENT="Index on archive date for filtering"/>
+        <INDEX NAME="coursename" UNIQUE="false" FIELDS="coursename" COMMENT="Index on course name for searching"/>
+        <INDEX NAME="course_deleted" UNIQUE="false" FIELDS="course_deleted" COMMENT="Index on deleted status"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_autoarchive_teachers" COMMENT="Teachers of a course at the time it was archived">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="archiveid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Archive record ID"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Teacher user ID"/>
+        <FIELD NAME="firstname" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false" COMMENT="First name at time of archiving"/>
+        <FIELD NAME="lastname" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false" COMMENT="Last name at time of archiving"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="archiveid" TYPE="foreign" FIELDS="archiveid" REFTABLE="local_autoarchive_courses" REFFIELDS="id"/>
+        <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+  </TABLES>
+</XMLDB>
