@@ -1,157 +1,161 @@
-# Moodle Course Auto-Archive Plugin
+# Course Auto-Archive (local_autoarchive)
 
-Lokales Plugin für **Moodle 5.1**, das inaktive Kurse erkennt, als Backup sichert, verbirgt und bei Bedarf in großer Zahl löscht.
+Local plugin that detects inactive courses, backs them up, hides them and, if required, deletes them in bulk.
 
-## Funktionen
+## Requirements
 
-- **Automatische Archivierung** (geplante Aufgabe): sichert Kurse ohne Zugriff seit X Tagen und verbirgt sie.
-- **Inaktive Kurse löschen**: Vorschau, Auswahl, Bestätigung und Löschen im Hintergrund (Ad-hoc-Task), optional mit Backup.
-  Ein Kurs wird nur gelöscht, wenn sein Backup geschrieben und per SHA1 geprüft wurde.
-- **Archivverwaltung**: Suchen, Filtern, Wiederherstellen, Herunterladen, Löschen; Mehrfachauswahl mit
-  „Alle auswählen“ für Sammelaktionen; Massenlöschung nach Archivalter.
-- **Ausgeschlossene Kategorien** (inkl. Unterkategorien), z. B. für Kursvorlagen.
-- **Aufbewahrungszeit** für Backups gelöschter Kurse (eigene, standardmäßig deaktivierte Aufgabe).
-- **Benachrichtigungen**: E-Mail nach automatischer Archivierung, Moodle-Mitteilung nach Hintergrund-Löschungen.
-- **Datenschutz**: Privacy-Provider für die gespeicherten Trainer/innen-Namen.
+- **Moodle 5.1 or later** (`$plugin->requires = 2025100600`). The plugin uses Moodle 5.1 APIs and does not
+  install on earlier versions.
+
+## Features
+
+- **Automatic archiving** (scheduled task): backs up courses that have not been accessed for X days and hides them.
+- **Delete inactive courses**: preview, selection, confirmation and deletion in the background (ad hoc task),
+  optionally with a backup. A course is only deleted once its backup has been written and verified by SHA1.
+- **Archive management**: search, filter, restore, download, delete; multi-select with "select all" for bulk
+  actions; bulk deletion by archive age.
+- **Excluded categories** (including subcategories), e.g. for course templates.
+- **Retention time** for backups of deleted courses (separate task, disabled by default).
+- **Notifications**: email after automatic archiving, Moodle notification after background deletions.
+- **Privacy**: privacy provider for the stored teacher names.
 
 ## Installation
 
-Ab Moodle 5.1 liegen Plugins im Verzeichnis `public`:
+From Moodle 5.1, plugins live in the `public` directory:
 
 ```bash
-cp -r local_autoarchive /pfad/zu/moodle/public/local/autoarchive
+cp -r local_autoarchive /path/to/moodle/public/local/autoarchive
 php admin/cli/upgrade.php
 ```
 
-Oder als Administrator/in über *Website-Administration → Mitteilungen*.
+Or as an administrator via *Site administration → Notifications*.
 
-Bei einem Update von Version 1.x werden die Daten automatisch übernommen. Archiveinträge, die durch einen Fehler
-der alten Version aus der Liste verschwunden waren (Massenlöschung mit „Backups behalten“), sind danach wieder sichtbar.
+When upgrading from version 1.x, existing data is migrated automatically. Archive entries that had disappeared
+from the list because of a bug in the old version (bulk deletion with "keep backups") become visible again.
 
-## Wie Inaktivität ermittelt wird
+## How inactivity is determined
 
-Letzter Zugriff ist der neueste Wert aus
+The last access is the most recent value of
 
-1. `user_lastaccess` (letzter Kursaufruf je Nutzer/in, unabhängig von der Log-Aufbewahrung) und
-2. dem Standard-Log, ohne Einträge aus Cron/CLI, aus Wiederherstellungen und ohne Backup-Ereignisse.
+1. `user_lastaccess` (last course access per user, independent of log retention) and
+2. the standard log, excluding entries from cron/CLI, from restores and from backup events.
 
-Gibt es keinen Zugriff, zählt das Erstellungsdatum des Kurses. Werden alle Nutzer/innen aus einem Kurs abgemeldet,
-entfernt Moodle deren `user_lastaccess`-Einträge. Ist die Log-Aufbewahrung kürzer als der Inaktivitätszeitraum,
-zeigen Einstellungsseite und Aufgabe deshalb eine Warnung.
+If there is no access at all, the course creation date counts. When all users are unenrolled from a course,
+Moodle removes their `user_lastaccess` records. If log retention is shorter than the inactivity period, the
+settings page and the task therefore show a warning.
 
-## Konfiguration
+## Configuration
 
-*Website-Administration → Plugins → Lokale Plugins → Kurs-Auto-Archivierung → Einstellungen*
+*Site administration → Plugins → Local plugins → Course Auto-Archive → Settings*
 
-| Einstellung | Standard | Bedeutung |
+| Setting | Default | Meaning |
 |---|---|---|
-| Inaktivitätszeitraum | 365 | Tage ohne Zugriff bis zur automatischen Archivierung |
-| Ausgeschlossene Kategorien | – | werden nie archiviert oder zum Löschen angeboten |
-| Kurse pro Durchlauf | 50 | Obergrenze je Lauf der Archivierungsaufgabe |
-| Archivierte Kurse verbergen | an | Kurs nach dem Backup verbergen |
-| E-Mail-Benachrichtigungen / Adressen | an / leer | Empfänger/innen der Archivierungsmeldung |
-| Aufbewahrungszeit für Backups | 730 | nur für Kurse, die nicht mehr existieren; 0 = unbegrenzt |
+| Inactivity period (days) | 365 | Days without access before automatic archiving |
+| Excluded categories | – | Never archived or offered for deletion |
+| Courses per run | 50 | Upper limit per run of the archiving task |
+| Hide archived courses | on | Hide the course after the backup |
+| Enable email notifications / Notification email addresses | on / empty | Recipients of the archiving report |
+| Backup retention time (days) | 730 | Only for courses that no longer exist; 0 = unlimited |
 
-### Geplante Aufgaben
+### Scheduled tasks
 
-Beide Aufgaben sind **nach der Installation deaktiviert** und müssen unter
-*Website-Administration → Server → Geplante Aufgaben* bewusst aktiviert werden:
+Both tasks are **disabled after installation** and have to be enabled deliberately under
+*Site administration → Server → Scheduled tasks*:
 
-- **Inaktive Kurse archivieren**: sonntags 03:00
-- **Abgelaufene Backups löschen**: sonntags 04:00
+- **Archive inactive courses**: Sundays 03:00
+- **Delete expired backups**: Sundays 04:00
 
-Manuell testen:
+Manual test run:
 
 ```bash
 php admin/cli/scheduled_task.php --execute='\local_autoarchive\task\archive_inactive_courses'
 ```
 
-Löschaufträge aus der Oberfläche laufen als Ad-hoc-Tasks über den normalen Cron.
+Deletions started from the user interface run as ad hoc tasks via the regular cron.
 
-## Verwendung
+## Usage
 
-- **Archivierte Kurse verwalten**: `/local/autoarchive/manage.php`
-- **Inaktive Kurse löschen**: `/local/autoarchive/cleanup.php`
+- **Manage archived courses**: `/local/autoarchive/manage.php`
+- **Delete inactive courses**: `/local/autoarchive/cleanup.php`
 
-### Mehrere Archive auf einmal bearbeiten
+### Processing several archives at once
 
-In der Archivliste hat jede Zeile ein Auswahlkästchen, das Kästchen im Tabellenkopf wählt alle Einträge der
-aktuellen Seite an oder ab. Mit „Einträge pro Seite“ (bis 500) passen mehr Einträge auf eine Seite.
-Unter der Tabelle stehen zwei Aktionen zur Wahl:
+Each row of the archive list has a checkbox; the checkbox in the table header selects or deselects all entries on
+the current page. "Entries per page" (up to 500) fits more entries on one page. Two actions are available below
+the table:
 
-- **Endgültig löschen (Kurs, Backup und Eintrag)**
-- **Nur Kurse löschen, Backups behalten**: die Einträge bleiben als „Nur Backup“ erhalten
+- **Delete permanently (course, backup and entry)**
+- **Delete courses only, keep backups**: the entries remain as "Backup only"
 
-Vor dem Ausführen zeigt eine Bestätigungsseite alle ausgewählten Kurse. Reaktivierte Kurse werden übersprungen.
-Das Löschen läuft im Hintergrund (Ad-hoc-Task), das Ergebnis kommt als Mitteilung.
+Before anything runs, a confirmation page lists all selected courses. Reactivated courses are skipped. Deletion
+runs in the background (ad hoc task); the result arrives as a notification.
 
-### Status in der Archivliste
+### Status in the archive list
 
-| Status | Bedeutung |
+| Status | Meaning |
 |---|---|
-| Kurs verborgen | Kurs existiert, ist verborgen, Backup vorhanden |
-| Reaktiviert | Kurs wurde nach der Archivierung wieder sichtbar geschaltet; wird nicht gelöscht |
-| Kurs sichtbar (nicht verborgen) | archiviert ohne Verbergen |
-| Nur Backup | Kurs gelöscht, Backup kann heruntergeladen oder wiederhergestellt werden |
+| Course hidden | Course exists, is hidden, backup available |
+| Reactivated | Course was made visible again after archiving; it will not be deleted |
+| Course visible (not hidden) | Archived without hiding |
+| Backup only | Course deleted; the backup can be downloaded or restored |
 
-### Wiederherstellen
+### Restoring
 
-- Existiert der Kurs noch, erhält er seine ursprüngliche Sichtbarkeit zurück.
-- Sonst wird er aus dem Backup als neuer Kurs angelegt (gleicher Kurzname, falls frei, sonst `_restored`).
+- If the course still exists, it gets its original visibility back.
+- Otherwise it is created from the backup as a new course (same short name if available, otherwise `_restored`).
 
-Nach erfolgreicher Wiederherstellung werden Archiveintrag und Backup entfernt. Schlägt sie fehl, bleibt beides erhalten.
-Ein Archiv kann nicht gleichzeitig zweimal wiederhergestellt werden (Sperre zwischen Browser und Kommandozeile).
+After a successful restore, the archive entry and the backup are removed. If the restore fails, both are kept.
+An archive cannot be restored twice at the same time (lock shared between browser and command line).
 
-### Wiederherstellen über die Kommandozeile
+### Restoring from the command line
 
-Große Backups (mehrere GB) scheitern im Browser am Zeitlimit des Webservers. Dafür gibt es ein CLI-Skript mit
-derselben Logik wie der Button. Aufruf aus dem Moodle-Hauptverzeichnis als Webserver-Benutzer:
+Large backups (several GB) hit the web server's time limit in the browser. For those there is a CLI script with
+the same logic as the button. Run it from the Moodle root directory as the web server user:
 
 ```bash
-# Archive auflisten (ID, Status, Größe, Archivierungsdatum, Kursname)
+# List archives (ID, status, size, archive date, course name)
 sudo -u www-data php public/local/autoarchive/cli/restore.php --list --search=informatik
 
-# Archiv mit ID 42 wiederherstellen
+# Restore the archive with ID 42
 sudo -u www-data php public/local/autoarchive/cli/restore.php --archiveid=42
 ```
 
-Vor einer Wiederherstellung aus der Datei prüft das Skript grob den freien Speicher: etwa die doppelte
-Backup-Größe im Temp-Verzeichnis und die einfache im Dateispeicher. Mit `--force` lässt sich die Prüfung übergehen.
-Für sehr lange Läufe empfiehlt sich `screen`, `tmux` oder `nohup`, damit ein Verbindungsabbruch der SSH-Sitzung
-den Vorgang nicht beendet.
+Before restoring from the file, the script roughly checks free disk space: about twice the backup size in the
+temp directory and once in the file storage. `--force` skips this check. For very long runs, use `screen`, `tmux`
+or `nohup` so that a dropped SSH connection does not stop the process.
 
-## Berechtigungen
+## Capabilities
 
-| Capability | Risiko | Zweck |
+| Capability | Risk | Purpose |
 |---|---|---|
-| `local/autoarchive:manage` | Personal | Archivliste sehen |
-| `local/autoarchive:restore` | Personal, Config | Kurse wiederherstellen |
-| `local/autoarchive:delete` | Datenverlust | Kurse und Archive löschen |
-| `local/autoarchive:download` | Personal | Backups (mit Nutzerdaten) herunterladen |
+| `local/autoarchive:manage` | Personal | View the archive list |
+| `local/autoarchive:restore` | Personal, config | Restore courses |
+| `local/autoarchive:delete` | Data loss | Delete courses and archives |
+| `local/autoarchive:download` | Personal | Download backups (including user data) |
 
-Standardmäßig hat nur die Rolle **Manager** diese Rechte.
+By default only the **Manager** role has these capabilities.
 
-## Backup-Speicherort
+## Backup location
 
-`$CFG->dataroot/local_autoarchive/backups/` (außerhalb des Webroots). Backups enthalten Nutzerdaten, Rollen,
-Aktivitäten und Dateien, aber keine Logs. Einstellungen, die die Website-Konfiguration sperrt, werden respektiert.
+`$CFG->dataroot/local_autoarchive/backups/` (outside the web root). Backups contain user data, roles, activities
+and files, but no logs. Settings locked by the site configuration are respected.
 
-## Dateistruktur
+## File structure
 
 ```
 local_autoarchive/
 ├── classes/
-│   ├── archive_manager.php                 # Kern-Logik
-│   ├── privacy/provider.php                # Datenschutz-API
-│   ├── table/archived_courses_table.php    # Archivliste
+│   ├── archive_manager.php                 # Core logic
+│   ├── privacy/provider.php                # Privacy API
+│   ├── table/archived_courses_table.php    # Archive list
 │   └── task/
-│       ├── archive_inactive_courses.php    # geplant: archivieren
-│       ├── purge_expired_backups.php       # geplant: Aufbewahrung
-│       ├── delete_courses.php              # ad hoc: inaktive Kurse löschen
-│       └── delete_archives.php             # ad hoc: Massenlöschung
+│       ├── archive_inactive_courses.php    # scheduled: archive
+│       ├── purge_expired_backups.php       # scheduled: retention
+│       ├── delete_courses.php              # ad hoc: delete inactive courses
+│       └── delete_archives.php             # ad hoc: bulk deletion
 ├── db/ (access, install.xml, messages, tasks, upgrade)
 ├── lang/ (de, en)
-├── cli/restore.php                     # Wiederherstellen über die Kommandozeile
+├── cli/restore.php                     # Restore from the command line
 ├── bulk_action.php, bulk_delete.php, cleanup.php, delete.php, download.php, manage.php, restore.php
 ├── settings.php
 └── version.php
@@ -160,23 +164,23 @@ local_autoarchive/
 ## Changelog
 
 ### Version 2.0.0 (2026-10-26)
-- Anpassung an Moodle 5.1 (Namespaces, Bootstrap 5, Admin-Navigation, `sql_table`)
-- Kurse werden nur gelöscht, wenn ihr Backup geprüft vorhanden ist
-- Löschvorgänge laufen im Hintergrund mit Ergebnis-Mitteilung
-- Inaktivität über `user_lastaccess` + Log (ohne Cron- und Backup-Einträge)
-- „Backups behalten“ bei der Massenlöschung lässt Backups in der Liste
-- Ausgeschlossene Kategorien, Aufbewahrungszeit-Aufgabe, Kurse pro Durchlauf
-- Geplante Aufgaben standardmäßig deaktiviert
-- E-Mail-Benachrichtigungen repariert
-- Privacy-Provider, Risk-Bitmasks, Trainer/innen ohne E-Mail-Adressen gespeichert
-- Sortierung und Filter der Archivliste repariert
-- Mehrfachauswahl und Sammelaktionen in der Archivliste, Einträge pro Seite wählbar
-- CLI-Skript zum Auflisten und Wiederherstellen großer Archive, Sperre gegen doppelte Wiederherstellung
-- Einstellung „Kompressionsstufe“ entfernt (hatte keine Wirkung)
+- Adapted to Moodle 5.1 (namespaces, Bootstrap 5, admin navigation, `sql_table`)
+- Courses are only deleted once their backup has been verified
+- Deletions run in the background with a result notification
+- Inactivity from `user_lastaccess` + log (without cron and backup entries)
+- "Keep backups" in bulk deletion keeps the backups in the list
+- Excluded categories, retention task, courses per run
+- Scheduled tasks disabled by default
+- Email notifications fixed
+- Privacy provider, risk bitmasks, teachers stored without email addresses
+- Sorting and filtering of the archive list fixed
+- Multi-select and bulk actions in the archive list, selectable entries per page
+- CLI script to list and restore large archives, lock against concurrent restores
+- "Compression level" setting removed (it had no effect)
 
 ### Version 1.0.0 (2026-01-27)
-- Erste Veröffentlichung
+- First release
 
-## Lizenz
+## License
 
-GNU GPL v3 oder später – siehe [LICENSE](LICENSE).
+GNU GPL v3 or later – see [LICENSE](LICENSE).
