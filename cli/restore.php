@@ -19,7 +19,7 @@
  * CLI script to list and restore archived courses (for large backups that time out in the browser).
  *
  * @package    local_autoarchive
- * @copyright  2026 Your Name
+ * @copyright  2026 Tobias Sanders
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

@@ -46,7 +46,7 @@ settings page and the task therefore show a warning.
 
 ## Configuration
 
-*Site administration → Plugins → Local plugins → Course Auto-Archive → Settings*
+*Site administration → Plugins → Local plugins → Course auto-archive → Settings*
 
 | Setting | Default | Meaning |
 |---|---|---|

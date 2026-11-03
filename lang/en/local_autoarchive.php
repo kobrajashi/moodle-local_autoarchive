@@ -20,7 +20,7 @@
  *
  * @package    local_autoarchive
  * @category   string
- * @copyright  2026 Your Name
+ * @copyright  2026 Tobias Sanders
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -137,7 +137,7 @@ $string['notification_subject'] = 'Courses archived automatically';
 $string['notificationemails'] = 'Notification email addresses';
 $string['notificationemails_desc'] = 'Email addresses that receive notifications, separated by commas or line breaks.';
 $string['perpage'] = 'Entries per page';
-$string['pluginname'] = 'Course Auto-Archive';
+$string['pluginname'] = 'Course auto-archive';
 $string['privacy:metadata:core_backup'] = 'The archived course backups are created with the core backup system and contain the user data included in a course backup.';
 $string['privacy:metadata:local_autoarchive_teachers'] = 'Editing teachers of a course at the time it was archived.';
 $string['privacy:metadata:local_autoarchive_teachers:archiveid'] = 'The archive entry.';

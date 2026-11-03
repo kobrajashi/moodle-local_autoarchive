@@ -19,7 +19,7 @@
  * Archive manager class for handling course archiving operations.
  *
  * @package    local_autoarchive
- * @copyright  2026 Your Name
+ * @copyright  2026 Tobias Sanders
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
