@@ -163,6 +163,12 @@ local_autoarchive/
 
 ## Changelog
 
+### Version 2.0.1 (2026-11-03)
+- Coding style aligned with the Moodle coding standard (moodle-cs)
+- German language pack removed from the plugin; translations are provided via AMOS
+- Plugin name in sentence case
+- GitHub Actions workflow with moodle-plugin-ci (PostgreSQL and MariaDB)
+
 ### Version 2.0.0 (2026-10-26)
 - Adapted to Moodle 5.1 (namespaces, Bootstrap 5, admin navigation, `sql_table`)
 - Courses are only deleted once their backup has been verified

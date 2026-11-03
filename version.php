@@ -25,8 +25,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_autoarchive';
-$plugin->version = 2026102600;  // YYYYMMDDXX format.
+$plugin->version = 2026110300;  // YYYYMMDDXX format.
 $plugin->requires = 2025100600; // Moodle 5.1.
 $plugin->supported = [501, 501];
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = '2.0.0';
+$plugin->release = '2.0.1';
