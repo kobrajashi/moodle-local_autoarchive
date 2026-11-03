@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  * Ad-hoc task for the bulk deletion of archives.
  *
@@ -34,7 +33,6 @@ use local_autoarchive\archive_manager;
  * Custom data: archiveids (int[]), deletebackups (bool), requester (int user ID).
  */
 class delete_archives extends adhoc_task {
-
     /**
      * Get the name of the task.
      *
@@ -64,8 +62,11 @@ class delete_archives extends adhoc_task {
                 'count' => $result['count'],
                 'total' => count($archiveids),
             ]);
-            archive_manager::notify_user((int)$data->requester, get_string('bulkdelete_result_subject', 'local_autoarchive'),
-                archive_manager::format_result($summary, $result['errors']));
+            archive_manager::notify_user(
+                (int)$data->requester,
+                get_string('bulkdelete_result_subject', 'local_autoarchive'),
+                archive_manager::format_result($summary, $result['errors'])
+            );
         }
     }
 }

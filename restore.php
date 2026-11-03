@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  * Restore an archived course.
  *
@@ -62,8 +61,12 @@ require_sesskey();
 
 try {
     $courseid = archive_manager::restore_course($id);
-    redirect(new url('/course/view.php', ['id' => $courseid]), get_string('courserestored', 'local_autoarchive', $name),
-        null, notification::NOTIFY_SUCCESS);
+    redirect(
+        new url('/course/view.php', ['id' => $courseid]),
+        get_string('courserestored', 'local_autoarchive', $name),
+        null,
+        notification::NOTIFY_SUCCESS
+    );
 } catch (\core\exception\moodle_exception $e) {
     // Messages of the plugin's own exceptions are already escaped.
     $details = empty($e->debuginfo) ? '' : ' (' . s($e->debuginfo) . ')';

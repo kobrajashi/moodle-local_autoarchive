@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  * Delete inactive courses in bulk (preview, confirmation, background processing).
  *
@@ -52,8 +51,10 @@ if ($action === 'confirm') {
     }
 
     $message = get_string('cleanup_confirm_message', 'local_autoarchive', count($courseids));
-    $message .= html_writer::tag('p', get_string($createbackups ? 'cleanup_withbackups' : 'cleanup_withoutbackups',
-        'local_autoarchive'), ['class' => 'mt-3']);
+    $message .= html_writer::tag('p', get_string(
+        $createbackups ? 'cleanup_withbackups' : 'cleanup_withoutbackups',
+        'local_autoarchive'
+    ), ['class' => 'mt-3']);
     $message .= html_writer::tag('p', get_string('cleanup_warning', 'local_autoarchive'), ['class' => 'fw-bold text-danger']);
 
     // The IDs are posted as one hidden field, so long selections do not hit URL length limits.
@@ -89,8 +90,12 @@ if ($action === 'queue') {
     ]);
     \core\task\manager::queue_adhoc_task($task, true);
 
-    redirect(new url('/local/autoarchive/manage.php'), get_string('cleanup_queued', 'local_autoarchive', count($courseids)),
-        null, notification::NOTIFY_SUCCESS);
+    redirect(
+        new url('/local/autoarchive/manage.php'),
+        get_string('cleanup_queued', 'local_autoarchive', count($courseids)),
+        null,
+        notification::NOTIFY_SUCCESS
+    );
 }
 
 echo $OUTPUT->header();
@@ -126,8 +131,11 @@ echo html_writer::empty_tag('input', [
 ]);
 echo html_writer::div(get_string('cleanup_days_help', 'local_autoarchive'), 'form-text');
 echo html_writer::end_div();
-echo html_writer::div(html_writer::tag('button', get_string('cleanup_preview', 'local_autoarchive'),
-    ['type' => 'submit', 'class' => 'btn btn-primary']), 'mb-4');
+echo html_writer::div(html_writer::tag(
+    'button',
+    get_string('cleanup_preview', 'local_autoarchive'),
+    ['type' => 'submit', 'class' => 'btn btn-primary']
+), 'mb-4');
 echo html_writer::end_tag('form');
 echo html_writer::end_div();
 echo html_writer::end_div();
@@ -175,14 +183,18 @@ if ($action === 'preview') {
                 'label' => format_string($course->fullname),
                 'labelclasses' => 'visually-hidden',
             ]);
-            $teachers = array_map(fn($t) => $t->firstname . ' ' . $t->lastname,
-                archive_manager::get_course_teachers($course->id));
+            $teachers = array_map(
+                fn($t) => $t->firstname . ' ' . $t->lastname,
+                archive_manager::get_course_teachers($course->id)
+            );
 
             $name = html_writer::tag('strong', format_string($course->fullname)) . html_writer::empty_tag('br') .
                 html_writer::tag('small', s($course->shortname), ['class' => 'text-muted']);
             if ($course->archiveid) {
-                $name .= ' ' . html_writer::span(get_string('cleanup_alreadyarchived', 'local_autoarchive'),
-                    'badge bg-info text-dark');
+                $name .= ' ' . html_writer::span(
+                    get_string('cleanup_alreadyarchived', 'local_autoarchive'),
+                    'badge bg-info text-dark'
+                );
             }
 
             echo html_writer::start_tag('tr');
@@ -205,14 +217,21 @@ if ($action === 'preview') {
             'checked' => 'checked',
             'class' => 'form-check-input',
         ]);
-        echo html_writer::label(get_string('cleanup_createbackups', 'local_autoarchive'), 'createbackups', false,
-            ['class' => 'form-check-label fw-bold']);
+        echo html_writer::label(
+            get_string('cleanup_createbackups', 'local_autoarchive'),
+            'createbackups',
+            false,
+            ['class' => 'form-check-label fw-bold']
+        );
         echo html_writer::div(get_string('cleanup_createbackups_help', 'local_autoarchive'), 'form-text');
         echo html_writer::end_div();
 
         echo html_writer::div(
-            html_writer::tag('button', get_string('cleanup_continue', 'local_autoarchive'),
-                ['type' => 'submit', 'class' => 'btn btn-danger btn-lg']),
+            html_writer::tag(
+                'button',
+                get_string('cleanup_continue', 'local_autoarchive'),
+                ['type' => 'submit', 'class' => 'btn btn-danger btn-lg']
+            ),
             'mt-3'
         );
         echo html_writer::end_tag('form');

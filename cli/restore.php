@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  * CLI script to list and restore archived courses (for large backups that time out in the browser).
  *
@@ -88,8 +87,13 @@ if ($options['list']) {
         $select = $DB->sql_like('coursefullname', ':search', false) . ' OR ' . $DB->sql_like('coursename', ':search2', false);
         $params['search'] = $params['search2'] = '%' . $DB->sql_like_escape($options['search']) . '%';
     }
-    $archives = $DB->get_records_select('local_autoarchive_courses', $select, $params, 'coursefullname',
-        'id, courseid, coursefullname, coursename, archived_date, backupfilesize, backupfilename, course_hidden');
+    $archives = $DB->get_records_select(
+        'local_autoarchive_courses',
+        $select,
+        $params,
+        'coursefullname',
+        'id, courseid, coursefullname, coursename, archived_date, backupfilesize, backupfilename, course_hidden'
+    );
     if (!$archives) {
         cli_writeln('No archives found.');
         exit(0);
@@ -109,7 +113,8 @@ if ($options['list']) {
         if (archive_manager::get_backup_path($archive) === null) {
             $status .= ' !file';
         }
-        cli_writeln(sprintf('%-8d %-14s %-10s %-11s %s (%s)',
+        cli_writeln(sprintf(
+            '%-8d %-14s %-10s %-11s %s (%s)',
             $archive->id,
             $status,
             display_size($archive->backupfilesize),

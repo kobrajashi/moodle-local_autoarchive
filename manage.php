@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  * Admin interface listing archived courses.
  *
@@ -137,8 +136,12 @@ if (has_capability('local/autoarchive:delete', context_system::instance())) {
     echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()]);
 
     echo html_writer::start_div('mb-3');
-    echo html_writer::label(get_string('bulkdelete_days', 'local_autoarchive'), 'bulkdelete_days', false,
-        ['class' => 'form-label fw-bold']);
+    echo html_writer::label(
+        get_string('bulkdelete_days', 'local_autoarchive'),
+        'bulkdelete_days',
+        false,
+        ['class' => 'form-label fw-bold']
+    );
     echo html_writer::empty_tag('input', [
         'type' => 'number',
         'name' => 'days',
@@ -161,8 +164,12 @@ if (has_capability('local/autoarchive:delete', context_system::instance())) {
         'value' => '1',
         'class' => 'form-check-input',
     ]);
-    echo html_writer::label(get_string('bulkdelete_includebackups', 'local_autoarchive'), 'deletebackups', false,
-        ['class' => 'form-check-label']);
+    echo html_writer::label(
+        get_string('bulkdelete_includebackups', 'local_autoarchive'),
+        'deletebackups',
+        false,
+        ['class' => 'form-check-label']
+    );
     echo html_writer::div(get_string('bulkdelete_includebackups_help', 'local_autoarchive'), 'form-text');
     echo html_writer::end_div();
 
@@ -199,10 +206,19 @@ if (!$table->has_bulk_actions()) {
         ];
         echo html_writer::start_div('d-flex flex-wrap align-items-end gap-3 mt-2 mb-4');
         echo html_writer::start_div();
-        echo html_writer::label(get_string('bulkaction_selected', 'local_autoarchive'), 'bulkaction', false,
-            ['class' => 'form-label fw-bold']);
-        echo html_writer::select($bulkoptions, 'bulkaction', 'deletearchives', false,
-            ['id' => 'bulkaction', 'class' => 'form-select']);
+        echo html_writer::label(
+            get_string('bulkaction_selected', 'local_autoarchive'),
+            'bulkaction',
+            false,
+            ['class' => 'form-label fw-bold']
+        );
+        echo html_writer::select(
+            $bulkoptions,
+            'bulkaction',
+            'deletearchives',
+            false,
+            ['id' => 'bulkaction', 'class' => 'form-select']
+        );
         echo html_writer::end_div();
         echo html_writer::start_div();
         echo html_writer::tag('button', get_string('bulkaction_apply', 'local_autoarchive'), [

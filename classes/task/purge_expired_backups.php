@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  * Scheduled task removing expired backups of deleted courses.
  *
@@ -32,7 +31,6 @@ use local_autoarchive\archive_manager;
  * Deletes backups of deleted courses after the configured retention time.
  */
 class purge_expired_backups extends scheduled_task {
-
     /**
      * Get the name of the task.
      *

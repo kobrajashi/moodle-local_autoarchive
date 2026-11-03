@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  * Settings and admin pages for local_autoarchive plugin.
  *
@@ -34,12 +33,21 @@ if ($hassiteconfig) {
     $settings = new admin_settingpage('local_autoarchive', get_string('settings', 'local_autoarchive'));
 
     if ($ADMIN->fulltree) {
-        $intro = html_writer::link(new url('/local/autoarchive/manage.php'),
-            get_string('managearchivedcourses', 'local_autoarchive'), ['class' => 'btn btn-primary mb-3 me-2']);
-        $intro .= html_writer::link(new url('/local/autoarchive/cleanup.php'),
-            get_string('cleanup', 'local_autoarchive'), ['class' => 'btn btn-danger mb-3']);
-        $intro .= html_writer::div(get_string('tasks_disabled_info', 'local_autoarchive',
-            (new url('/admin/tool/task/scheduledtasks.php'))->out()), 'alert alert-info');
+        $intro = html_writer::link(
+            new url('/local/autoarchive/manage.php'),
+            get_string('managearchivedcourses', 'local_autoarchive'),
+            ['class' => 'btn btn-primary mb-3 me-2']
+        );
+        $intro .= html_writer::link(
+            new url('/local/autoarchive/cleanup.php'),
+            get_string('cleanup', 'local_autoarchive'),
+            ['class' => 'btn btn-danger mb-3']
+        );
+        $intro .= html_writer::div(get_string(
+            'tasks_disabled_info',
+            'local_autoarchive',
+            (new url('/admin/tool/task/scheduledtasks.php'))->out()
+        ), 'alert alert-info');
         $warning = \local_autoarchive\archive_manager::get_loglifetime_warning();
         if ($warning !== '') {
             $intro .= html_writer::div($warning, 'alert alert-warning');

@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  * Bulk deletion of archives older than a number of days.
  *
@@ -55,8 +54,10 @@ if (!$archives) {
 
 if (!$confirm) {
     $message = get_string('bulkdelete_confirm', 'local_autoarchive', (object)['days' => $days, 'count' => count($archives)]);
-    $message .= html_writer::tag('p', get_string($deletebackups ? 'bulkdelete_withbackups' : 'bulkdelete_keepbackups',
-        'local_autoarchive'), ['class' => 'mt-3 fw-bold']);
+    $message .= html_writer::tag('p', get_string(
+        $deletebackups ? 'bulkdelete_withbackups' : 'bulkdelete_keepbackups',
+        'local_autoarchive'
+    ), ['class' => 'mt-3 fw-bold']);
     $message .= html_writer::tag('p', get_string('confirmdelete', 'local_autoarchive'), ['class' => 'text-danger']);
 
     $continue = new single_button(new url($pageurl, [

@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  * Archive manager class for handling course archiving operations.
  *
@@ -41,7 +40,6 @@ use stdClass;
  * Archive manager class.
  */
 class archive_manager {
-
     /** @var string Allowed characters of a backup file name (also covers names created by older versions). */
     const FILENAME_PATTERN = '/^[a-zA-Z0-9_\-\.]+\.mbz$/';
 
@@ -339,8 +337,13 @@ class archive_manager {
             clearstatcache(true, $filepath);
             if (!$copied || !is_readable($filepath) || filesize($filepath) !== (int)$tempfile->get_filesize()) {
                 @unlink($filepath);
-                throw new moodle_exception('error_createbackup', 'local_autoarchive', '', $courseid,
-                    'Copy to archive directory failed');
+                throw new moodle_exception(
+                    'error_createbackup',
+                    'local_autoarchive',
+                    '',
+                    $courseid,
+                    'Copy to archive directory failed'
+                );
             }
 
             return $filepath;
@@ -702,8 +705,13 @@ class archive_manager {
             $log('Extracting backup to ' . $tempdir . '...');
             $packer = get_file_packer('application/vnd.moodle.backup');
             if (!$packer->extract_to_pathname($backupfile, $tempdir)) {
-                throw new moodle_exception('error_restore', 'local_autoarchive', '', s($archive->coursefullname),
-                    'Failed to extract backup file');
+                throw new moodle_exception(
+                    'error_restore',
+                    'local_autoarchive',
+                    '',
+                    s($archive->coursefullname),
+                    'Failed to extract backup file'
+                );
             }
 
             $shortname = self::get_unique_shortname($archive->coursename);
@@ -722,8 +730,13 @@ class archive_manager {
             if (!$rc->execute_precheck()) {
                 $errors = $rc->get_precheck_results()['errors'] ?? [];
                 if ($errors) {
-                    throw new moodle_exception('error_restore', 'local_autoarchive', '', s($archive->coursefullname),
-                        implode('; ', $errors));
+                    throw new moodle_exception(
+                        'error_restore',
+                        'local_autoarchive',
+                        '',
+                        s($archive->coursefullname),
+                        implode('; ', $errors)
+                    );
                 }
             }
             $rc->execute_plan();
@@ -868,8 +881,13 @@ class archive_manager {
         if (!$deletebackups) {
             $select .= ' AND course_deleted = 0';
         }
-        return $DB->get_records_select('local_autoarchive_courses', $select, $params, 'archived_date ASC',
-            'id, courseid, coursefullname, archived_date, course_deleted');
+        return $DB->get_records_select(
+            'local_autoarchive_courses',
+            $select,
+            $params,
+            'archived_date ASC',
+            'id, courseid, coursefullname, archived_date, course_deleted'
+        );
     }
 
     /**
@@ -924,8 +942,11 @@ class archive_manager {
             $courseid = (int)$courseid;
             $label = (string)$courseid;
             try {
-                $course = $DB->get_record('course', ['id' => $courseid],
-                    'id, category, fullname, shortname, visible, timecreated');
+                $course = $DB->get_record(
+                    'course',
+                    ['id' => $courseid],
+                    'id, category, fullname, shortname, visible, timecreated'
+                );
                 if (!$course || $courseid == SITEID) {
                     throw new moodle_exception('error_coursenotfound', 'local_autoarchive', '', $courseid);
                 }
@@ -937,8 +958,14 @@ class archive_manager {
                 }
 
                 if ($createbackups) {
-                    $existing = $DB->get_records('local_autoarchive_courses',
-                        ['courseid' => $courseid, 'course_deleted' => 0], 'id DESC', '*', 0, 1);
+                    $existing = $DB->get_records(
+                        'local_autoarchive_courses',
+                        ['courseid' => $courseid, 'course_deleted' => 0],
+                        'id DESC',
+                        '*',
+                        0,
+                        1
+                    );
                     $existing = reset($existing);
 
                     if ($existing && self::verify_backup($existing) !== null) {
@@ -990,8 +1017,11 @@ class archive_manager {
             return $result;
         }
 
-        $archives = $DB->get_records_select('local_autoarchive_courses',
-            'course_deleted = 1 AND archived_date <= :cutofftime', ['cutofftime' => time() - ($days * DAYSECS)]);
+        $archives = $DB->get_records_select(
+            'local_autoarchive_courses',
+            'course_deleted = 1 AND archived_date <= :cutofftime',
+            ['cutofftime' => time() - ($days * DAYSECS)]
+        );
         foreach ($archives as $archive) {
             // Safety net: never purge the backup of a course that exists.
             if ($DB->record_exists('course', ['id' => $archive->courseid])) {

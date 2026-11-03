@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  * Delete a single archive (course, backup and record).
  *
@@ -51,8 +50,12 @@ if (!$confirm) {
     $key = $course ? 'confirmdelete_course' : 'confirmdelete_backup';
     $message = get_string($key, 'local_autoarchive', $name) . ' ' . get_string('confirmdelete', 'local_autoarchive');
 
-    $continue = new single_button(new url($pageurl, ['confirm' => 1]), get_string('delete', 'local_autoarchive'),
-        'post', single_button::BUTTON_DANGER);
+    $continue = new single_button(
+        new url($pageurl, ['confirm' => 1]),
+        get_string('delete', 'local_autoarchive'),
+        'post',
+        single_button::BUTTON_DANGER
+    );
 
     echo $OUTPUT->header();
     echo $OUTPUT->heading(get_string('delete', 'local_autoarchive'));
@@ -71,6 +74,10 @@ try {
     $details = empty($e->debuginfo) ? '' : ' (' . s($e->debuginfo) . ')';
     redirect($returnurl, $e->getMessage() . $details, null, notification::NOTIFY_ERROR);
 } catch (\Throwable $e) {
-    redirect($returnurl, get_string('error_delete', 'local_autoarchive', $name) . ': ' . s(archive_manager::describe_exception($e)),
-        null, notification::NOTIFY_ERROR);
+    redirect(
+        $returnurl,
+        get_string('error_delete', 'local_autoarchive', $name) . ': ' . s(archive_manager::describe_exception($e)),
+        null,
+        notification::NOTIFY_ERROR
+    );
 }

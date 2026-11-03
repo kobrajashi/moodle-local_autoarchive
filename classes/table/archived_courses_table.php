@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  * Table of archived courses.
  *
@@ -36,7 +35,6 @@ use local_autoarchive\archive_manager;
  * Table class for archived courses.
  */
 class archived_courses_table extends sql_table {
-
     /** @var array archiveid => teacher names, loaded once per page */
     protected $teachers = [];
 

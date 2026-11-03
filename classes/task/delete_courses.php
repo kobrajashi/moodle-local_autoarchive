@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  * Ad-hoc task deleting inactive courses selected on the cleanup page.
  *
@@ -34,7 +33,6 @@ use local_autoarchive\archive_manager;
  * Custom data: courseids (int[]), createbackups (bool), days (int), requester (int user ID).
  */
 class delete_courses extends adhoc_task {
-
     /**
      * Get the name of the task.
      *
@@ -66,8 +64,11 @@ class delete_courses extends adhoc_task {
                 'backedup' => $result['backed_up'],
                 'reused' => $result['reused'],
             ]);
-            archive_manager::notify_user((int)$data->requester, get_string('cleanup_result_subject', 'local_autoarchive'),
-                archive_manager::format_result($summary, $result['errors']));
+            archive_manager::notify_user(
+                (int)$data->requester,
+                get_string('cleanup_result_subject', 'local_autoarchive'),
+                archive_manager::format_result($summary, $result['errors'])
+            );
         }
     }
 }

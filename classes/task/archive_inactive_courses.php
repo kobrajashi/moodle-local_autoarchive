@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  * Scheduled task for archiving inactive courses.
  *
@@ -32,7 +31,6 @@ use local_autoarchive\archive_manager;
  * Backs up inactive courses, records them and hides them if configured.
  */
 class archive_inactive_courses extends scheduled_task {
-
     /**
      * Get the name of the task.
      *
